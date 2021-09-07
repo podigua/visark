@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<VBox fx:id="root" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.podigua.visark.client.index.controller.IndexController"
+      prefHeight="400.0" prefWidth="600.0">
+    <ToolBar fx:id="toolBar" style="-fx-padding: 5;">
+        <ComboBox fx:id="comboBox" prefWidth="290"></ComboBox>
+        <Button fx:id="clusterBtn" onAction="#cluster" >
+            <tooltip>
+                <Tooltip text="集群"></Tooltip>
+            </tooltip>
+            <graphic>
+                <ImageView fitWidth="20" fitHeight="20">
+                    <Image url="/images/logo.png"></Image>
+                </ImageView>
+            </graphic>
+        </Button>
+    </ToolBar>
+    <HBox style="-fx-spacing: 5">
+        <HBox fx:id="treePane" prefWidth="300">
+            <TreeView fx:id="treeView">
+
+            </TreeView>
+        </HBox>
+        <HBox fx:id="tabPane">
+            <TabPane fx:id="tab">
+                <tabs>
+                    <Tab text="欢迎页" closable="false">
+                        <fx:include source="welcome.fxml"></fx:include>
+                    </Tab>
+                </tabs>
+            </TabPane>
+        </HBox>
+    </HBox>
+</VBox>

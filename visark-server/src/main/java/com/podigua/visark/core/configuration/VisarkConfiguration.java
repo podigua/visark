@@ -1,8 +1,5 @@
 package com.podigua.visark.core.configuration;
 
-import com.podigua.visark.core.properties.VisarkProperties;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -11,8 +8,5 @@ import org.springframework.context.annotation.Configuration;
  **/
 @Configuration
 public class VisarkConfiguration {
-    @Bean
-    public TomcatServletWebServerFactory servletWebServerFactory(VisarkProperties visarkProperties) {
-        return new TomcatServletWebServerFactory(visarkProperties.getPort());
-    }
+
 }

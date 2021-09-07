@@ -39,12 +39,4 @@ public interface ClusterService {
      * @return
      */
     List<Cluster> query4List();
-
-    /**
-     * 分页查询
-     *
-     * @param params
-     * @return
-     */
-    PageInfo<Cluster> query4Page(ClusterParams params);
 }

@@ -1,8 +1,9 @@
 package com.podigua.visark.server.cluster.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Date;
 
@@ -11,9 +12,18 @@ import java.util.Date;
  * @author: podigua
  * @create: 2021-09-01 17:36
  **/
-@Data
+@Getter
+@Setter
 @TableName("b_cluster")
 public class Cluster {
+    public Cluster(){
+
+    }
+    public Cluster(String id,String name){
+        this.id=id;
+        this.name=name;
+
+    }
     /**
      * 主键
      */
@@ -31,16 +41,19 @@ public class Cluster {
      * 创建时间
      */
     @TableField(fill = FieldFill.INSERT, insertStrategy = FieldStrategy.NEVER)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date createTime;
     /**
      * 最后更新时间
      */
     @TableField(fill = FieldFill.INSERT_UPDATE)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date updateTime;
     /**
      * 描述
      */
     private String description;
+
+    @Override
+    public String toString() {
+        return this.getName();
+    }
 }

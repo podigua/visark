@@ -15,12 +15,5 @@ import org.springframework.util.SocketUtils;
 @ConfigurationProperties("podigua.visark")
 @EnableConfigurationProperties(value = VisarkProperties.class)
 public class VisarkProperties {
-    /**
-     * 端口
-     */
-    private Integer port = SocketUtils.findAvailableTcpPort();
-    /**
-     * 前端页面地址
-     */
-    private String url = "http://localhost:" + port;
+
 }

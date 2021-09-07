@@ -33,6 +33,11 @@ public class TreeNode {
      */
     private List<TreeNode> children;
 
+    @Override
+    public String toString() {
+        return getLabel();
+    }
+
     /**
      * 创建
      *
