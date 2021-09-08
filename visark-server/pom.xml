@@ -74,6 +74,17 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>com.zenjava</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.podigua.visark.VisarkApplication</mainClass>
+                    <appName>${project.build.finalName}</appName>
+                    <needMenu>false</needMenu>
+                    <needShortcut>true</needShortcut>
+                    <vendor>山东优致信息科技</vendor>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
