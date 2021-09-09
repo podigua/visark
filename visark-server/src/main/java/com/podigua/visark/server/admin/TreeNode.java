@@ -32,6 +32,10 @@ public class TreeNode {
      * 子节点
      */
     private List<TreeNode> children;
+    /**
+     * 设置父节点
+     */
+    private TreeNode parent;
 
     @Override
     public String toString() {

@@ -7,6 +7,7 @@ import org.apache.kafka.clients.admin.ConsumerGroupListing;
 import org.apache.kafka.clients.admin.KafkaAdminClient;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.Node;
+import org.springframework.util.CollectionUtils;
 
 import java.time.Duration;
 import java.util.*;
@@ -27,7 +28,13 @@ public class KafkaAdminUtils {
         Properties properties = new Properties();
         properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         properties.put(CommonClientConfigs.REQUEST_TIMEOUT_MS_CONFIG, option.getTimeout());
-        return (KafkaAdminClient) AdminClient.create(properties);
+        KafkaAdminClient client = (KafkaAdminClient) AdminClient.create(properties);
+        Collection<Node> nodes = nodes(client);
+        if (CollectionUtils.isEmpty(nodes)) {
+            close(client);
+            throw new RuntimeException("连接失败");
+        }
+        return client;
     }
 
     /**
@@ -47,9 +54,10 @@ public class KafkaAdminUtils {
      * @param client
      * @return
      */
-    public static Collection<Node> nodes(KafkaAdminClient client) {
+    public static List<Node> nodes(KafkaAdminClient client) {
         try {
-            return client.describeCluster().nodes().get();
+            Collection<Node> nodes = client.describeCluster().nodes().get();
+            return nodes.stream().sorted(Comparator.comparing(Node::host)).collect(Collectors.toList());
         } catch (Exception e) {
             return Collections.emptyList();
         }
@@ -61,11 +69,12 @@ public class KafkaAdminUtils {
      * @param client
      * @return
      */
-    public static Set<String> topics(KafkaAdminClient client) {
+    public static List<String> topics(KafkaAdminClient client) {
         try {
-            return client.listTopics().names().get();
+            Set<String> names = client.listTopics().names().get();
+            return names.stream().sorted().collect(Collectors.toList());
         } catch (Exception e) {
-            return Collections.emptySet();
+            return Collections.emptyList();
         }
     }
 

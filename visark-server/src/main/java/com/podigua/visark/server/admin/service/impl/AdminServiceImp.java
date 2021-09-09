@@ -8,13 +8,13 @@ import com.podigua.visark.server.admin.service.AdminCacheService;
 import com.podigua.visark.server.admin.service.AdminService;
 import com.podigua.visark.server.option.service.OptionService;
 import lombok.AllArgsConstructor;
-import org.apache.kafka.clients.admin.KafkaAdminClient;
-import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.clients.admin.*;
 import org.apache.kafka.common.Node;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
@@ -25,6 +25,11 @@ import java.util.stream.Collectors;
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class AdminServiceImp implements AdminService {
     private final AdminCacheService adminCacheService;
+
+    @Override
+    public AdminClient connect(String id) {
+        return adminCacheService.getById(id);
+    }
 
     @Override
     public List<TreeNode> getTrees(String id) {
@@ -49,15 +54,29 @@ public class AdminServiceImp implements AdminService {
         NewTopic newTopic = new NewTopic(topic.getName(), topic.getPartitions(), topic.getReplication());
         newTopic.configs(topic.getConfigs());
         topics.add(newTopic);
-        client.createTopics(topics);
+        CreateTopicsResult result = client.createTopics(topics);
+        result.values().forEach((key, value) -> {
+            try {
+                value.get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Override
     public void deleteTopic(String id, String topic) {
         KafkaAdminClient client = adminCacheService.getById(id);
-        List<String> topics=new ArrayList<>();
+        List<String> topics = new ArrayList<>();
         topics.add(topic);
-        client.deleteTopics(topics);
+        DeleteTopicsResult result = client.deleteTopics(topics);
+        result.values().forEach((key,value)->{
+            try {
+                value.get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private void addConsumers(List<TreeNode> result, KafkaAdminClient client) {
@@ -71,6 +90,7 @@ public class AdminServiceImp implements AdminService {
     private void addTopics(List<TreeNode> result, KafkaAdminClient client) {
         TreeNode topics = TreeNode.create(NodeType.TOPIC, NodeType.TOPIC.name(), "Topics");
         List<TreeNode> children = getTopics(client);
+        children.forEach(child -> child.setParent(topics));
         topics.setChildren(children);
         result.add(topics);
     }
@@ -90,7 +110,7 @@ public class AdminServiceImp implements AdminService {
      * @return
      */
     private List<TreeNode> getTopics(KafkaAdminClient client) {
-        Set<String> names = KafkaAdminUtils.topics(client);
+        List<String> names = KafkaAdminUtils.topics(client);
         return names.stream().map(name -> TreeNode.create(NodeType.TOPIC_INSTANCE, name, name)).collect(Collectors.toList());
     }
 }
