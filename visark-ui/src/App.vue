@@ -168,7 +168,7 @@
         <el-main style="padding:0px 5px">
           <div v-if="isReady" style="height: 99%">
              <el-tabs v-model="currentTab" @tab-remove="onTabRemove" closable type="border-card" style="height: 100%">
-               <el-tab-pane v-for="tab in tabs" :label="tab" :name="tab" style="height: 100%">
+               <el-tab-pane v-for="tab in tabs" :label="tab" :name="tab" style="height: 100%" :key="tab">
                  <TopicData :cluster="cluster" :topic="tab"></TopicData>
                </el-tab-pane>
              </el-tabs>

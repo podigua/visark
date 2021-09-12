@@ -72,7 +72,7 @@ export default {
           api.save(this.option).then(res => {
             this.$message.success("保存成功");
             this.get();
-            this.load = false;
+            this.loading = false;
           }).catch(() => {
             this.$message.error("保存失败");
             this.loading = false;

@@ -11,6 +11,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.header.Headers;
+import org.apache.kafka.common.utils.Bytes;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -79,8 +80,13 @@ public class KafkaReceive<K, V> {
                         V value = record.value();
                         log.info("接收到消息:{}",value);
                         String message = "";
-                        if (value instanceof byte[]) {
-                            message = Arrays.toString((byte[]) value);
+                        if (value instanceof Bytes) {
+                            byte[] bytes = ((Bytes) value).get();
+                            StringBuilder sb=new StringBuilder();
+                            for (byte b : bytes) {
+                                sb.append(b);
+                            }
+                            message = sb.toString();
                         } else if (value instanceof String) {
                             message = (String) value;
                         }
