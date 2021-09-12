@@ -2,7 +2,8 @@ package com.podigua.visark.server.admin.service;
 
 import com.podigua.visark.server.admin.TreeNode;
 import com.podigua.visark.server.admin.entity.NewTopicEntity;
-import org.apache.kafka.clients.admin.AdminClient;
+import com.podigua.visark.server.admin.entity.NodeInfo;
+import com.podigua.visark.server.admin.entity.TopicInfo;
 
 import java.util.List;
 
@@ -11,12 +12,6 @@ import java.util.List;
  * @create: 2021-09-01 20:55
  **/
 public interface AdminService {
-    /**
-     * 连接
-     * @param id
-     * @return
-     */
-    AdminClient connect(String id);
     /**
      * 获取左侧树
      *
@@ -47,4 +42,27 @@ public interface AdminService {
      * @param topic
      */
     void deleteTopic(String id, String topic);
+
+    /**
+     * 查看节点信息
+     * @param cluster
+     * @param id
+     * @return
+     */
+    NodeInfo getNode(String cluster, String id);
+
+    /**
+     * 获取所有节点信息
+     * @param cluster
+     * @return
+     */
+    List<NodeInfo> getNodes(String cluster);
+
+    /**
+     * 获取Topic 信息
+     * @param cluster
+     * @param topic
+     * @return
+     */
+    TopicInfo getTopic(String cluster, String topic);
 }

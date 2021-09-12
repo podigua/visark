@@ -7,8 +7,8 @@ package com.podigua.visark.server.admin;
 public enum NodeType {
     TOPIC,
     TOPIC_INSTANCE,
-    CLUSTER,
-    CLUSTER_INSTANCE,
+    NODE,
+    NODE_INSTANCE,
     CONSUMER,
     CONSUMER_INSTANCE;
 }

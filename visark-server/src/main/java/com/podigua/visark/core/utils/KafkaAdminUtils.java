@@ -2,15 +2,16 @@ package com.podigua.visark.core.utils;
 
 import com.podigua.visark.server.option.entity.Option;
 import org.apache.kafka.clients.CommonClientConfigs;
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.ConsumerGroupListing;
-import org.apache.kafka.clients.admin.KafkaAdminClient;
+import org.apache.kafka.clients.admin.*;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.Node;
+import org.apache.kafka.common.acl.AclBinding;
 import org.springframework.util.CollectionUtils;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
@@ -54,10 +55,9 @@ public class KafkaAdminUtils {
      * @param client
      * @return
      */
-    public static List<Node> nodes(KafkaAdminClient client) {
+    public static Collection<Node> nodes(KafkaAdminClient client) {
         try {
-            Collection<Node> nodes = client.describeCluster().nodes().get();
-            return nodes.stream().sorted(Comparator.comparing(Node::host)).collect(Collectors.toList());
+            return client.describeCluster().nodes().get().stream().sorted(Comparator.comparing(Node::host)).collect(Collectors.toList());
         } catch (Exception e) {
             return Collections.emptyList();
         }
@@ -71,8 +71,7 @@ public class KafkaAdminUtils {
      */
     public static List<String> topics(KafkaAdminClient client) {
         try {
-            Set<String> names = client.listTopics().names().get();
-            return names.stream().sorted().collect(Collectors.toList());
+            return client.listTopics().names().get().stream().sorted().collect(Collectors.toList());
         } catch (Exception e) {
             return Collections.emptyList();
         }
@@ -86,9 +85,27 @@ public class KafkaAdminUtils {
      */
     public static List<String> consumers(KafkaAdminClient client) {
         try {
+
             return client.listConsumerGroups().all().get().stream().map(ConsumerGroupListing::groupId).collect(Collectors.toList());
         } catch (Exception e) {
             return Collections.emptyList();
+        }
+    }
+
+    /**
+     * 获取topic 信息
+     * @param client
+     * @param topic
+     * @return
+     */
+    public static TopicDescription topic(KafkaAdminClient client,String topic){
+        List<String> topics=new ArrayList<>();
+        topics.add(topic);
+        Map<String, KafkaFuture<TopicDescription>> values = client.describeTopics(topics).values();
+        try {
+            return values.get(topic).get();
+        } catch (InterruptedException | ExecutionException e) {
+            return null;
         }
     }
 

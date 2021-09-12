@@ -1,6 +1,7 @@
 package com.podigua.visark.server.option.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
@@ -22,11 +23,13 @@ public class Option {
      * 创建时间
      */
     @TableField(fill = FieldFill.INSERT, insertStrategy = FieldStrategy.NEVER)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
     /**
      * 最后更新时间
      */
     @TableField(fill = FieldFill.INSERT_UPDATE)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
     /**
      * 超时时间

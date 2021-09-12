@@ -4,7 +4,6 @@ import com.podigua.visark.core.PageParams;
 import lombok.Data;
 
 /**
- * 监听者
  * @author: podigua
  * @create: 2021-09-01 17:58
  **/
@@ -14,12 +13,4 @@ public class ClusterParams extends PageParams {
      * 名称
      */
     private String name;
-    /**
-     * 地址
-     */
-    private String bootstrapServers;
-    /**
-     * 描述
-     */
-    private String description;
 }

@@ -14,7 +14,6 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <exec.mainClass>com.podigua.visark.VisarkApplication</exec.mainClass>
     </properties>
 
     <dependencies>
@@ -26,6 +25,10 @@
         <dependency>
             <groupId>io.github.podigua</groupId>
             <artifactId>javafx-podigua-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -56,14 +59,17 @@
             <artifactId>spring-kafka</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.dlsc.formsfx</groupId>
-            <artifactId>formsfx-core</artifactId>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>30.1-jre</version>
         </dependency>
     </dependencies>
 
     <build>
-        <finalName>visark-server</finalName>
+        <finalName>visark</finalName>
         <plugins>
+
+            <!-- Spring Boot 构建 -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -75,53 +81,66 @@
                     </execution>
                 </executions>
             </plugin>
+            <!--SpringBoot和VUE整合打包-->
             <plugin>
-                <groupId>io.github.fvarrui</groupId>
-                <artifactId>javapackager</artifactId>
-                <version>1.5.1</version>
-                <configuration>
-                    <bundleJre>true</bundleJre>
-                    <mainClass>com.podigua.visark.VisarkApplication</mainClass>
-                    <generateInstaller>false</generateInstaller>
-                </configuration>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.0.0</version>
                 <executions>
-<!--                    <execution>-->
-<!--                        <id>bundling-for-windows</id>-->
-<!--                        <phase>package</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>package</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <platform>windows</platform>-->
-<!--                            <createZipball>true</createZipball>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                    <execution>-->
-<!--                        <id>bundling-for-linux</id>-->
-<!--                        <phase>package</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>package</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <platform>linux</platform>-->
-<!--                            <createTarball>true</createTarball>-->
-<!--                            <jdkPath>X:\\path\to\linux\jdk</jdkPath>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
+                    <!--1、maven执行node的install命令-->
                     <execution>
-                        <id>bundling-for-mac</id>
-                        <phase>package</phase>
+                        <id>exec-npm-install</id>
+                        <phase>validate</phase>
                         <goals>
-                            <goal>package</goal>
+                            <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <platform>mac</platform>
-                            <createTarball>true</createTarball>
-                            <jdkPath>/Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk</jdkPath>
+                            <executable>npm</executable>
+                            <arguments>
+                                <argument>install</argument>
+                            </arguments>
+                            <!--执行install命令的目录-->
+                            <workingDirectory>../visark-ui</workingDirectory>
+                        </configuration>
+                    </execution>
+                    <!--2、install完成后build-->
+                    <execution>
+                        <id>exec-npm-run-build</id>
+                        <!--阶段一定要在复制之前，且在打包和复制都在编译之前-->
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>npm</executable>
+                            <arguments>
+                                <argument>run</argument>
+                                <argument>build</argument>
+                            </arguments>
+                            <workingDirectory>../visark-ui</workingDirectory>
+                            <addOutputToClasspath>true</addOutputToClasspath>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
+        <resources>
+            <!-- Vue打包后目录 -->
+            <resource>
+                <directory>../visark-ui/dist</directory>
+                <targetPath>static</targetPath>
+                <includes>
+                    <include>**</include>
+                </includes>
+                <filtering>false</filtering>
+            </resource>
+            <!-- 本项目相关配置文件 -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**</include>
+                </includes>
+            </resource>
+        </resources>
     </build>
 </project>

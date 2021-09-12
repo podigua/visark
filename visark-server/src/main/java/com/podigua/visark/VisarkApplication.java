@@ -1,11 +1,12 @@
 package com.podigua.visark;
 
 import com.podigua.javafx.application.AbstractJavafxApplication;
-import com.podigua.javafx.support.FxmlService;
-import com.podigua.javafx.support.SplashScreen;
-import javafx.scene.Parent;
+import com.podigua.visark.core.properties.VisarkProperties;
+import com.podigua.visark.core.utils.WindowUtils;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.layout.HBox;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,30 +20,23 @@ import org.springframework.core.io.ClassPathResource;
 @SpringBootApplication
 public class VisarkApplication extends AbstractJavafxApplication {
     @Autowired
-    private FxmlService fxmlService;
+    private VisarkProperties visarkProperties;
 
     public static void main(String[] args) {
-        launch(VisarkApplication.class,new SplashScreen(){
-
-            @Override
-            public boolean visible() {
-                return false;
-            }
-
-            @Override
-            public String getImagePath() {
-                return null;
-            }
-        },args);
+        launch(VisarkApplication.class, args);
     }
 
 
     @SneakyThrows
     @Override
     protected void ready(Stage stage) {
-        Parent parent = fxmlService.load("fxml/index.fxml");
-        stage.setScene(new Scene(parent,1000,750));
-        stage.setTitle("imkt");
+        HBox root = new HBox();
+        WebView view = WindowUtils.createWebView(visarkProperties.getUrl());
+        root.getChildren().add(view);
+        stage.setScene(new Scene(root,1000,750));
+        view.prefHeightProperty().bind(root.heightProperty());
+        view.prefWidthProperty().bind(root.widthProperty());
+        stage.setTitle("Visark");
         stage.getIcons().add(new Image(new ClassPathResource("images/logo.png").getInputStream()));
         stage.show();
     }
