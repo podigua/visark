@@ -169,7 +169,7 @@
           <div v-if="isReady" style="height: 99%">
              <el-tabs v-model="currentTab" @tab-remove="onTabRemove" closable type="border-card" style="height: 100%">
                <el-tab-pane v-for="tab in tabs" :label="tab" :name="tab" style="height: 100%" :key="tab">
-                 <TopicData :cluster="cluster" :topic="tab"></TopicData>
+                 <TopicData :ref="tab" :cluster="cluster" :topic="tab"></TopicData>
                </el-tab-pane>
              </el-tabs>
           </div>
@@ -365,8 +365,10 @@ export default {
       }
     },
     onTabRemove(name){
+      debugger
       let index = this.tabs.findIndex(data=>data===name);
       if(index>-1){
+        this.$refs[name][0].close();
         this.tabs.splice(index,1);
       }
     }

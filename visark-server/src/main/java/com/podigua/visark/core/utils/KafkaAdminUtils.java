@@ -85,7 +85,6 @@ public class KafkaAdminUtils {
      */
     public static List<String> consumers(KafkaAdminClient client) {
         try {
-
             return client.listConsumerGroups().all().get().stream().map(ConsumerGroupListing::groupId).collect(Collectors.toList());
         } catch (Exception e) {
             return Collections.emptyList();

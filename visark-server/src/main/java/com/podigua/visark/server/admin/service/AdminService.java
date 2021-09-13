@@ -38,6 +38,7 @@ public interface AdminService {
 
     /**
      * 删除topic
+     *
      * @param id
      * @param topic
      */
@@ -45,6 +46,7 @@ public interface AdminService {
 
     /**
      * 查看节点信息
+     *
      * @param cluster
      * @param id
      * @return
@@ -53,6 +55,7 @@ public interface AdminService {
 
     /**
      * 获取所有节点信息
+     *
      * @param cluster
      * @return
      */
@@ -60,9 +63,18 @@ public interface AdminService {
 
     /**
      * 获取Topic 信息
+     *
      * @param cluster
      * @param topic
      * @return
      */
     TopicInfo getTopic(String cluster, String topic);
+
+    /**
+     * 删除消费组
+     *
+     * @param id
+     * @param groupId
+     */
+    void deleteConsumer(String id, String groupId);
 }

@@ -98,6 +98,21 @@ public class AdminServiceImp implements AdminService {
         return TopicInfo.of(description);
     }
 
+    @Override
+    public void deleteConsumer(String id, String groupId) {
+        KafkaAdminClient client = adminCacheService.getById(id);
+        List<String> groups = new ArrayList<>();
+        groups.add(groupId);
+        DeleteConsumerGroupsResult result = client.deleteConsumerGroups(groups);
+        result.deletedGroups().forEach((key,value)->{
+            try {
+                value.get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException("删除失败");
+            }
+        });
+    }
+
     private void addConsumers(List<TreeNode> result, KafkaAdminClient client) {
         TreeNode consumer = TreeNode.create(NodeType.CONSUMER, NodeType.CONSUMER.name(), "Consumers");
         List<String> consumers = KafkaAdminUtils.consumers(client);

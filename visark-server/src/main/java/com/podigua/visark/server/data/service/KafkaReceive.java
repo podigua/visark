@@ -1,6 +1,7 @@
 package com.podigua.visark.server.data.service;
 
 import com.podigua.visark.core.utils.ExecutorUtils;
+import com.podigua.visark.server.admin.service.AdminService;
 import com.podigua.visark.server.cluster.entity.Cluster;
 import com.podigua.visark.server.data.entity.Message;
 import com.podigua.visark.server.option.entity.Option;
@@ -13,8 +14,6 @@ import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.utils.Bytes;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -29,28 +28,21 @@ import java.util.function.Consumer;
 public class KafkaReceive<K, V> {
     private final AtomicBoolean running = new AtomicBoolean(false);
 
-    private final Option option;
     private final Cluster cluster;
     private final TopicOption topicOption;
+    private final String groupId;
     private final KafkaConsumer<K, V> consumer;
     private final ExecutorService executorService = ExecutorUtils.single();
-    private static String buildHostName() {
-        try {
-            InetAddress address = InetAddress.getLocalHost();
-            return address.getHostName();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
-    public KafkaReceive(Option option, Cluster cluster, TopicOption topicOption) {
-        this.option = option;
+    private final AdminService adminService;
+    public KafkaReceive(Option option, Cluster cluster, TopicOption topicOption, AdminService adminService) {
         this.cluster = cluster;
         this.topicOption = topicOption;
+        this.adminService = adminService;
+        this.groupId="visark-"+UUID.randomUUID().toString().replace("-","");
         Properties properties = new Properties();
         properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, cluster.getBootstrapServers());
         properties.put(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, option.getTimeout());
-        properties.put(ConsumerConfig.GROUP_ID_CONFIG, "visark-"+buildHostName());
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
         properties.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
         properties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "500");
@@ -103,6 +95,7 @@ public class KafkaReceive<K, V> {
                 }
             } finally {
                 consumer.close();
+                adminService.deleteConsumer(cluster.getId(),groupId);
                 executorService.shutdown();
             }
         });

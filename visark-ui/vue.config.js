@@ -8,6 +8,12 @@ module.exports = {
         port: 8080,
         compress: true,
         proxy: {
+            "^/receive": {
+                target: "ws://localhost:8082/receive",
+                changeOrigin: true,
+                ws:true,
+                pathRewrite: {'^/receive': '/'}
+            },
             '^/': {
                 target: 'http://localhost:8082',
                 changeOrigin: true,

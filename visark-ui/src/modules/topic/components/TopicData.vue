@@ -4,7 +4,7 @@
       <TopicOption :cluster="cluster" :topic="topic" ></TopicOption>
     </el-tab-pane>
     <el-tab-pane label="消费" name="receive">
-      <TopicReceive :cluster="cluster" :topic="topic" ></TopicReceive>
+      <TopicReceive ref="receive" :cluster="cluster" :topic="topic" ></TopicReceive>
     </el-tab-pane>
   </el-tabs>
 </template>
@@ -19,6 +19,10 @@ export default {
   data(){
     return{
       current:"receive"
+    }
+  },methods:{
+    close(){
+      this.$refs.receive.stop();
     }
   }
 }

@@ -1,5 +1,6 @@
 package com.podigua.visark.server.data.service.impl;
 
+import com.podigua.visark.server.admin.service.AdminService;
 import com.podigua.visark.server.cluster.entity.Cluster;
 import com.podigua.visark.server.cluster.service.ClusterService;
 import com.podigua.visark.server.data.entity.Message;
@@ -28,13 +29,14 @@ public class DataServiceImpl implements DataService {
     private final OptionService optionService;
     private final ClusterService clusterService;
     private final TopicOptionService topicOptionService;
+    private final AdminService adminService;
     @Override
     @Async
     public void receive(String clusterId, String topic, SseEmitter emitter) {
         Cluster cluster = clusterService.getById(clusterId);
         Option option = optionService.get();
         TopicOption topicOption = topicOptionService.get(clusterId, topic);
-        KafkaReceive receive=new KafkaReceive(option,cluster,topicOption);
+        KafkaReceive receive=new KafkaReceive(option,cluster,topicOption, adminService);
         Consumer<Message> consumer=message->{
             try {
                 emitter.send(SseEmitter.event().name("message").data(message));

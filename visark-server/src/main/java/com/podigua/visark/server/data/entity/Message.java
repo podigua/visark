@@ -1,5 +1,6 @@
 package com.podigua.visark.server.data.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.Headers;
@@ -19,6 +20,7 @@ public class Message {
     private Integer partition;
     private Long offset;
     private String message;
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
     private Date timestamp;
     private Map<String, String> headers = new HashMap<>(16);
 
