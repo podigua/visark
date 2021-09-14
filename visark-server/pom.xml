@@ -127,6 +127,17 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>com.zenjava</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.podigua.visark.VisarkApplication</mainClass>
+                    <appName>${project.build.finalName}</appName>
+                    <needMenu>false</needMenu>
+                    <needShortcut>true</needShortcut>
+                    <vendor>优致</vendor>
+                </configuration>
+            </plugin>
         </plugins>
         <resources>
             <!-- Vue打包后目录 -->
