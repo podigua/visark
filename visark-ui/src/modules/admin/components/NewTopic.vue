@@ -10,7 +10,7 @@
       </el-row>
       <el-row>
         <el-col :span="12">
-          <el-form-item label="分区数" prop="partitions">
+          <el-form-item label="分片数" prop="partitions">
             <el-input-number v-model="form.partitions" controls-position="right" style="width: 100%;"
                              :min="-1"></el-input-number>
           </el-form-item>
@@ -58,7 +58,7 @@ export default {
           {required: true, message: "名称为必填项", trigger: ["blur", "change"]}
         ],
         partitions: [
-          {required: true, type: 'number', message: "分区数为必填项", trigger: ["blur", "change"]},
+          {required: true, type: 'number', message: "分片数为必填项", trigger: ["blur", "change"]},
         ],
         replication: [
           {required: true, type: 'number', message: "副本数为必填项", trigger: ["blur", "change"]},

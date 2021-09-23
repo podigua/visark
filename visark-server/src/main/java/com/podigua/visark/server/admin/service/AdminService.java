@@ -77,4 +77,12 @@ public interface AdminService {
      * @param groupId
      */
     void deleteConsumer(String id, String groupId);
+
+    /**
+     * 分片
+     * @param id id
+     * @param topic topic
+     * @param count 新增到count个
+     */
+    void newPartitions(String id, String topic, Integer count);
 }

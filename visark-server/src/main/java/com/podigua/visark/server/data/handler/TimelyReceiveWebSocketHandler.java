@@ -1,6 +1,6 @@
 package com.podigua.visark.server.data.handler;
 
-import com.podigua.visark.server.data.service.KafkaReceiveService;
+import com.podigua.visark.server.data.service.KafkaTimelyReceiveService;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -18,12 +18,12 @@ import org.springframework.web.socket.WebSocketSession;
 @Service
 @Slf4j
 @AllArgsConstructor(onConstructor = @__(@Autowired))
-public class ReceiveWebSocketHandler implements WebSocketHandler {
-    private final KafkaReceiveService kafkaReceiveService;
+public class TimelyReceiveWebSocketHandler implements WebSocketHandler {
+    private final KafkaTimelyReceiveService kafkaTimelyReceiveService;
 
     @Override
     public void afterConnectionEstablished(@NonNull WebSocketSession webSocketSession) throws Exception {
-        kafkaReceiveService.init(webSocketSession);
+        kafkaTimelyReceiveService.init(webSocketSession);
     }
 
     @Override
@@ -33,12 +33,12 @@ public class ReceiveWebSocketHandler implements WebSocketHandler {
 
     @Override
     public void handleTransportError(@NonNull WebSocketSession webSocketSession, @NonNull Throwable throwable) throws Exception {
-        kafkaReceiveService.close(webSocketSession);
+        kafkaTimelyReceiveService.close(webSocketSession);
     }
 
     @Override
     public void afterConnectionClosed(@NonNull WebSocketSession webSocketSession, @NonNull CloseStatus closeStatus) throws Exception {
-        kafkaReceiveService.close(webSocketSession);
+        kafkaTimelyReceiveService.close(webSocketSession);
     }
 
     @Override

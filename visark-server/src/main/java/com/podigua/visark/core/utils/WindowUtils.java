@@ -2,6 +2,9 @@ package com.podigua.visark.core.utils;
 
 import com.podigua.javafx.State;
 import javafx.scene.Scene;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -46,7 +49,7 @@ public class WindowUtils {
      */
     public static WebView createWebView(String url) {
         WebView view = new WebView();
-        view.setContextMenuEnabled(false);
+//        view.setContextMenuEnabled(false);
         WebEngine engine = view.getEngine();
         engine.setJavaScriptEnabled(true);
         engine.load(url);

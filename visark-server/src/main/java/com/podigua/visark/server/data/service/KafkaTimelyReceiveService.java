@@ -6,7 +6,7 @@ import org.springframework.web.socket.WebSocketSession;
  * @author: podigua
  * @create: 2021-09-13 10:51
  **/
-public interface KafkaReceiveService {
+public interface KafkaTimelyReceiveService {
     /**
      * init
      * @param session

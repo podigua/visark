@@ -1,0 +1,1 @@
+alter table b_programme add column  name varchar(1024);

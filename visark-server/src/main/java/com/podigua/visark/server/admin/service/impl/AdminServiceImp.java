@@ -113,6 +113,12 @@ public class AdminServiceImp implements AdminService {
         });
     }
 
+    @Override
+    public void newPartitions(String id, String topic, Integer count) {
+        KafkaAdminClient client = adminCacheService.getById(id);
+        KafkaAdminUtils.newPartitions(client,topic,count);
+    }
+
     private void addConsumers(List<TreeNode> result, KafkaAdminClient client) {
         TreeNode consumer = TreeNode.create(NodeType.CONSUMER, NodeType.CONSUMER.name(), "Consumers");
         List<String> consumers = KafkaAdminUtils.consumers(client);

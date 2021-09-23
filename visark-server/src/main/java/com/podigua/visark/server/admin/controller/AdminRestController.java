@@ -1,6 +1,7 @@
 package com.podigua.visark.server.admin.controller;
 
 import com.podigua.visark.core.annotation.WebResult;
+import com.podigua.visark.core.utils.ClipboardUtils;
 import com.podigua.visark.server.admin.TreeNode;
 import com.podigua.visark.server.admin.entity.NewTopicEntity;
 import com.podigua.visark.server.admin.entity.NodeInfo;
@@ -57,6 +58,19 @@ public class AdminRestController {
     }
 
     /**
+     * 新增 分片
+     * @param id
+     * @param topic
+     * @param count
+     */
+    @PutMapping("/{id}/{topic}/partitions/new")
+    public void newPartitions(@PathVariable String id, @PathVariable String topic,Integer count) {
+        adminService.newPartitions(id, topic,count);
+    }
+
+
+
+    /**
      * 删除topic
      *
      * @param id    集群
@@ -100,5 +114,14 @@ public class AdminRestController {
     @GetMapping("/{cluster}/topic/{topic}")
     public TopicInfo getTopic(@PathVariable String cluster, @PathVariable String topic) {
         return adminService.getTopic(cluster,topic);
+    }
+
+    /**
+     * 复制
+     * @param text
+     */
+    @PostMapping("/copy")
+    public void copy(@RequestBody String text){
+        ClipboardUtils.copy(text);
     }
 }

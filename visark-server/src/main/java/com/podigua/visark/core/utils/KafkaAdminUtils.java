@@ -11,6 +11,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -78,6 +79,27 @@ public class KafkaAdminUtils {
     }
 
     /**
+     * 新增分片
+     *
+     * @param client
+     * @param topic
+     * @param count
+     */
+    public static void newPartitions(KafkaAdminClient client, String topic, Integer count) {
+        Map<String, NewPartitions> partitions = new ConcurrentHashMap<>();
+        NewPartitions partition = NewPartitions.increaseTo(count);
+        partitions.put(topic, partition);
+        CreatePartitionsResult result = client.createPartitions(partitions);
+        result.values().forEach((key, value) -> {
+            try {
+                value.get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException("增加失败");
+            }
+        });
+    }
+
+    /**
      * 消费者
      *
      * @param client
@@ -93,12 +115,13 @@ public class KafkaAdminUtils {
 
     /**
      * 获取topic 信息
+     *
      * @param client
      * @param topic
      * @return
      */
-    public static TopicDescription topic(KafkaAdminClient client,String topic){
-        List<String> topics=new ArrayList<>();
+    public static TopicDescription topic(KafkaAdminClient client, String topic) {
+        List<String> topics = new ArrayList<>();
         topics.add(topic);
         Map<String, KafkaFuture<TopicDescription>> values = client.describeTopics(topics).values();
         try {

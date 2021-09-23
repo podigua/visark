@@ -1,6 +1,21 @@
 <template>
   <div id="app" style="margin-top: 0px;">
     <el-dialog
+        :title="topic"
+        :modal="false"
+        width="600px"
+        :close-on-click-modal="false"
+        v-if="isNewPartitions"
+        :visible.sync="isNewPartitions"
+    >
+      <NewPartitions ref="newPartitions" :cluster="cluster" :topic="topic" @close="onNewPartitionsSuccess"
+                     @error="loading=false"></NewPartitions>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="isNewPartitions=false">取 消</el-button>
+        <el-button type="primary" @click="updateNewPartitions" :loading="loading">确 定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
         title="分片信息"
         width="600px"
         v-if="isViewPartition"
@@ -133,11 +148,11 @@
             </el-input>
             <el-tree ref="tree"
                      :data="trees"
+                     expand-on-click-node
                      :filter-node-method="filterNode"
-                     node-key="value"
-                     :expand-on-click-node="false">
+                     node-key="value">
                <span class="tree-node" slot-scope="{ data, node }">
-                  <span>{{ data.label }}</span>
+                  <span style="width: 200px;overflow: hidden;white-space: nowrap;text-overflow:ellipsis;" :title="data.label">{{ data.label }}</span>
                  <span>
                    <el-dropdown @command="(command)=>{handleCommand(command,data,node)}">
                     <el-button type="text" icon="el-icon-more-outline">
@@ -149,7 +164,8 @@
                       </template>
                       <template v-if="data.type==='TOPIC_INSTANCE'">
                         <el-dropdown-item icon="el-icon-delete" command="delete-topic"> 删除</el-dropdown-item>
-                        <el-dropdown-item icon="el-icon-view" command="view-partition"> 分片信息</el-dropdown-item>
+                        <el-dropdown-item icon="el-icon-edit" command="new-partition"> 修改分片</el-dropdown-item>
+                        <el-dropdown-item icon="el-icon-view" command="view-partition"> 查看分片</el-dropdown-item>
                         <el-dropdown-item icon="el-icon-s-data" command="topic-data"> 数据</el-dropdown-item>
                       </template>
                       <template v-if="data.type==='NODE_INSTANCE'">
@@ -167,11 +183,11 @@
         </el-aside>
         <el-main style="padding:0px 5px">
           <div v-if="isReady" style="height: 99%">
-             <el-tabs v-model="currentTab" @tab-remove="onTabRemove" closable type="border-card" style="height: 100%">
-               <el-tab-pane v-for="tab in tabs" :label="tab" :name="tab" style="height: 100%" :key="tab">
-                 <TopicData :ref="tab" :cluster="cluster" :topic="tab"></TopicData>
-               </el-tab-pane>
-             </el-tabs>
+            <el-tabs v-model="currentTab" @tab-remove="onTabRemove" closable type="border-card" style="height: 100%">
+              <el-tab-pane v-for="tab in tabs" :label="tab" :name="tab" style="height: 100%" :key="tab">
+                <TopicData :ref="tab" :cluster="cluster" :topic="tab"></TopicData>
+              </el-tab-pane>
+            </el-tabs>
           </div>
         </el-main>
       </el-container>
@@ -184,29 +200,30 @@
 
 import Cluster from "./modules/cluster/view/Cluster";
 import Option from "./modules/option/view/Option";
-import Node  from "./modules/admin/components/Node"
-import NodeList  from "./modules/admin/components/NodeList"
+import Node from "./modules/admin/components/Node"
+import NodeList from "./modules/admin/components/NodeList"
 import clusterApi from './modules/cluster/api/cluster'
 import NewTopic from "./modules/admin/components/NewTopic";
 import adminApi from './modules/admin/api/admin'
 import Topic from "./modules/admin/components/Topic";
 import TopicData from "@/modules/topic/components/TopicData";
+import NewPartitions from "@/modules/admin/components/NewPartitions";
 
 export default {
   name: 'App',
-  components: {TopicData, Topic, Option, Cluster, NewTopic,Node,NodeList},
+  components: {NewPartitions, TopicData, Topic, Option, Cluster, NewTopic, Node, NodeList},
   data() {
     return {
-      tabs:[],
+      tabs: [],
       current: {
         data: null,
         node: null
       },
       isReady: false,
       cluster: "",
-      node:"",
-      topic:"",
-      currentTab:"",
+      node: "",
+      topic: "",
+      currentTab: "",
       clusters: [],
       isOptionEdit: false,
       isCreateTopic: false,
@@ -215,6 +232,7 @@ export default {
       isViewNode: false,
       isViewNodeList: false,
       isViewPartition: false,
+      isNewPartitions: false,
       loading: false,
       filterText: "",
       trees: [],
@@ -245,21 +263,21 @@ export default {
       })
     },
     onClusterDelete(id) {
-      if(id===this.cluster){
-        this.trees=[];
-        this.tabs=[];
-        this.isReady=false;
-        this.cluster="";
+      if (id === this.cluster) {
+        this.trees = [];
+        this.tabs = [];
+        this.isReady = false;
+        this.cluster = "";
       }
-      let index = this.clusters.findIndex(data=>data.id===id);
-      if(index>-1){
-        this.clusters.splice(index,1);
+      let index = this.clusters.findIndex(data => data.id === id);
+      if (index > -1) {
+        this.clusters.splice(index, 1);
       }
     },
     onClusterChange(id) {
       this.filterText = "";
       this.trees = [];
-      this.tabs=[];
+      this.tabs = [];
       this.isReady = false;
       this.isSuccess = true;
       if (!id) {
@@ -294,20 +312,22 @@ export default {
         this.isCreateTopic = true;
       } else if (command === 'refresh-topic') {
         this.refreshTopic(data)
-      } else if(command==='delete-topic'){
-        this.deleteTopic(data,node);
-      } else if(command==='view-node'){
-        this.viewNode(data,node);
-      } else if(command==='view-nodes'){
-        this.viewNodes(data,node);
-      } else if(command==='view-partition'){
-        this.viewPartition(data,node);
-      }else if(command==='topic-data'){
+      } else if (command === 'delete-topic') {
+        this.deleteTopic(data, node);
+      } else if (command === 'view-node') {
+        this.viewNode(data, node);
+      } else if (command === 'view-nodes') {
+        this.viewNodes(data, node);
+      } else if (command === 'view-partition') {
+        this.viewPartition(data, node);
+      } else if (command === 'topic-data') {
         this.topicData(data);
+      } else if (command === 'new-partition') {
+        this.newPartitions(data);
       }
     },
     refreshTopic(data) {
-      this.filterText="";
+      this.filterText = "";
       data.children = [];
       adminApi.getTopics(this.cluster).then(res => {
         if (res.data && res.data.length > 0) {
@@ -317,45 +337,56 @@ export default {
         }
       })
     },
-    deleteTopic(data,node){
+    deleteTopic(data, node) {
       this.$confirm("此操作将永久删除, 是否继续?", "提示").then(() => {
-         adminApi.deleteTopic(this.cluster,data.value).then(()=>{
-           this.$message.success("删除成功");
-           const parent = node.parent;
-           const children = parent.data.children || parent.data;
-           const index = children.findIndex(d => d.value === data.value);
-           children.splice(index, 1);
-         }).catch(()=>{
-           this.$message.error("删除失败")
-         })
+        adminApi.deleteTopic(this.cluster, data.value).then(() => {
+          this.$message.success("删除成功");
+          const parent = node.parent;
+          const children = parent.data.children || parent.data;
+          const index = children.findIndex(d => d.value === data.value);
+          children.splice(index, 1);
+        }).catch(() => {
+          this.$message.error("删除失败")
+        })
       });
     },
-    viewNode(data){
-      this.node=data.value;
-      this.isViewNode=true;
+    viewNode(data) {
+      this.node = data.value;
+      this.isViewNode = true;
     },
-    viewNodes(){
-      this.isViewNodeList=true;
+    viewNodes() {
+      this.isViewNodeList = true;
     },
-    viewPartition(data){
-      this.topic=data.label;
-      this.isViewPartition=true;
+    viewPartition(data) {
+      this.topic = data.label;
+      this.isViewPartition = true;
     },
-    topicData(data){
-      let tab = this.tabs.find(d=>d===data.value);
-      if(!tab){
+    topicData(data) {
+      let tab = this.tabs.find(d => d === data.value);
+      if (!tab) {
         this.tabs.push(data.value);
       }
-      this.currentTab=data.value;
+      this.currentTab = data.value;
     },
     createTopic() {
       this.loading = true;
       this.$refs.newTopic.createTopic();
     },
+    newPartitions(data) {
+      this.topic = data.value;
+      this.isNewPartitions = true;
+    },
+    onNewPartitionsSuccess() {
+      this.isNewPartitions = false;
+      this.loading = false;
+    },
     onCreateTopicSuccess() {
       this.loading = false;
       this.isCreateTopic = false;
       this.refreshTopic(this.current.data)
+    },
+    updateNewPartitions() {
+      this.$refs.newPartitions.newPartitions();
     },
     cancelConnect() {
       this.isConnect = false;
@@ -364,12 +395,11 @@ export default {
         this.cancel = null;
       }
     },
-    onTabRemove(name){
-      debugger
-      let index = this.tabs.findIndex(data=>data===name);
-      if(index>-1){
+    onTabRemove(name) {
+      let index = this.tabs.findIndex(data => data === name);
+      if (index > -1) {
         this.$refs[name][0].close();
-        this.tabs.splice(index,1);
+        this.tabs.splice(index, 1);
       }
     }
   }, created() {
@@ -394,9 +424,25 @@ export default {
   padding-right: 8px;
 }
 
-::-webkit-scrollbar {
-  display: flex;
+
+::-webkit-scrollbar { /*滚动条整体样式*/
+  width: 4px; /*高宽分别对应横竖滚动条的尺寸*/
+  height: 4px;
+  scrollbar-arrow-color: red;
+
 }
 
+::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
+  border-radius: 5px;
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.2);
+  scrollbar-arrow-color: red;
+}
+
+::-webkit-scrollbar-track { /*滚动条里面轨道*/
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.1);
+}
 
 </style>

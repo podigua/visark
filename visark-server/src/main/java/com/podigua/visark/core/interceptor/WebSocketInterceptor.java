@@ -1,5 +1,6 @@
 package com.podigua.visark.core.interceptor;
 
+import com.podigua.visark.core.utils.UUIDUtils;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -21,7 +22,7 @@ public class WebSocketInterceptor implements HandshakeInterceptor {
                                    @NonNull WebSocketHandler webSocketHandler,
                                    @NonNull Map<String, Object> map) {
         if (serverHttpRequest instanceof ServletServerHttpRequest) {
-            String uuid = UUID.randomUUID().toString().replace("-", "");
+            String uuid = UUIDUtils.uuid();
             map.put("uuid", uuid);
             return true;
         } else {

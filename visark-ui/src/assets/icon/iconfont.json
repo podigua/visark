@@ -6,6 +6,48 @@
   "description": "Kafka工具",
   "glyphs": [
     {
+      "icon_id": "9838056",
+      "name": "高级表达式",
+      "font_class": "gaojibiaodashi",
+      "unicode": "e6bc",
+      "unicode_decimal": 59068
+    },
+    {
+      "icon_id": "14093526",
+      "name": "新增表达式",
+      "font_class": "xinzengbiaodashi",
+      "unicode": "e658",
+      "unicode_decimal": 58968
+    },
+    {
+      "icon_id": "15173007",
+      "name": "方案",
+      "font_class": "fangan",
+      "unicode": "e78c",
+      "unicode_decimal": 59276
+    },
+    {
+      "icon_id": "22549522",
+      "name": "表达式",
+      "font_class": "biaodashi",
+      "unicode": "e951",
+      "unicode_decimal": 59729
+    },
+    {
+      "icon_id": "7017730",
+      "name": "表达式定义",
+      "font_class": "biaodashidingyi",
+      "unicode": "e624",
+      "unicode_decimal": 58916
+    },
+    {
+      "icon_id": "23517665",
+      "name": "正则表达式",
+      "font_class": "a-regex1x",
+      "unicode": "e6f8",
+      "unicode_decimal": 59128
+    },
+    {
       "icon_id": "6487820",
       "name": "集群",
       "font_class": "cluster",

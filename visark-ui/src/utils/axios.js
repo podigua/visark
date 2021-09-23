@@ -49,7 +49,24 @@ const post = (url, params = {}, configs = {}) => {
         ...configs,
     });
 };
-
+/**
+ * post方式 text/plain
+ * @param url
+ * @param params
+ * @param configs
+ * @returns {AxiosPromise}
+ */
+const postText = (url, params = "", configs = {}) => {
+    return axios({
+        url: url,
+        method: "post",
+        headers: {
+            "Content-Type": "text/plain",
+        },
+        data: params,
+        ...configs,
+    });
+};
 /**
  * post方式 application/json
  * @param url
@@ -164,6 +181,7 @@ export {
     getBlob,
     post,
     postJson,
+    postText,
     postBlob,
     postJsonBlob,
     postFormData,

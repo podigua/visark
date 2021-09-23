@@ -1,7 +1,7 @@
 package com.podigua.visark.core.configuration;
 
 import com.podigua.visark.core.interceptor.WebSocketInterceptor;
-import com.podigua.visark.server.data.handler.ReceiveWebSocketHandler;
+import com.podigua.visark.server.data.handler.TimelyReceiveWebSocketHandler;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -18,11 +18,11 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class WebSshWebSocketConfiguration implements WebSocketConfigurer {
 
-    private final ReceiveWebSocketHandler receiveWebSocketHandler;
+    private final TimelyReceiveWebSocketHandler timelyReceiveWebSocketHandler;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
-        webSocketHandlerRegistry.addHandler(receiveWebSocketHandler, "/receive")
+        webSocketHandlerRegistry.addHandler(timelyReceiveWebSocketHandler, "/receive")
                 .addInterceptors(new WebSocketInterceptor())
                 .setAllowedOrigins("*");
     }
