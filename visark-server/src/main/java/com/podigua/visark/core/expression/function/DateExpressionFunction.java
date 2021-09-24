@@ -33,12 +33,12 @@ public class DateExpressionFunction implements ExpressionFunction {
     /**
      * 添加天数,可以为负数
      *
-     * @param current  开始时间
+     * @param date  开始时间
      * @param amount 天数
      * @return Date
      */
-    public Date addDays(Date current, Integer amount) {
-        return DateUtils.addDays(current, amount);
+    public Date addDays(Date date, Integer amount) {
+        return DateUtils.addDays(date, amount);
     }
 
     /**
@@ -54,12 +54,12 @@ public class DateExpressionFunction implements ExpressionFunction {
     /**
      * 添加分钟
      *
-     * @param current 开始时间
+     * @param date 开始时间
      * @param amount  分钟数
      * @return Date
      */
-    public Date addMinutes(Date current, Integer amount) {
-        return DateUtils.addMinutes(current, amount);
+    public Date addMinutes(Date date, Integer amount) {
+        return DateUtils.addMinutes(date, amount);
     }
 
     /**
@@ -75,12 +75,12 @@ public class DateExpressionFunction implements ExpressionFunction {
     /**
      * 添加秒
      *
-     * @param current 开始时间
+     * @param date 开始时间
      * @param amount 秒数
      * @return Date
      */
-    public Date addSeconds(Date current, Integer amount) {
-        return DateUtils.addSeconds(current, amount);
+    public Date addSeconds(Date date, Integer amount) {
+        return DateUtils.addSeconds(date, amount);
     }
 
     /**
