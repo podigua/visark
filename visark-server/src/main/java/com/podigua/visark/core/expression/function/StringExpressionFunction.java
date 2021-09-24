@@ -27,6 +27,53 @@ public class StringExpressionFunction implements ExpressionFunction {
     }
 
     /**
+     * 格式化时间
+     *
+     * @param date
+     * @return
+     */
+    public String formatTime(Date date) {
+        return DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss");
+    }
+
+    /**
+     * 格式化时间
+     *
+     * @param date
+     * @return
+     */
+    public String formatDate(Date date) {
+        return DateFormatUtils.format(date, "yyyy-MM-dd");
+    }
+
+    /**
+     * 格式化当前时间
+     *
+     * @return yyyy-MM-dd HH:mm:ss
+     */
+    public String yyyyMMddHHmmss() {
+        return DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss");
+    }
+
+    /**
+     * 格式化当前时间
+     *
+     * @return yyyy-MM-dd
+     */
+    public String yyyyMMdd() {
+        return DateFormatUtils.format(new Date(), "yyyy-MM-dd");
+    }
+
+    /**
+     * 格式化当前时间
+     *
+     * @return HH:mm:ss
+     */
+    public String hhmmss() {
+        return DateFormatUtils.format(new Date(), "HH:mm:ss");
+    }
+
+    /**
      * 生成UUID
      *
      * @return

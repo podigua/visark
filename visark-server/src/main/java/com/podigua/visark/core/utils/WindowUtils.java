@@ -49,7 +49,7 @@ public class WindowUtils {
      */
     public static WebView createWebView(String url) {
         WebView view = new WebView();
-//        view.setContextMenuEnabled(false);
+        view.setContextMenuEnabled(false);
         WebEngine engine = view.getEngine();
         engine.setJavaScriptEnabled(true);
         engine.load(url);

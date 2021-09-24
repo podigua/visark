@@ -12,6 +12,7 @@ import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.common.TemplateParserContext;
+import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
@@ -39,12 +40,26 @@ public class ExpressionExecutorImpl implements ExpressionExecutor {
 
     @Override
     public <T> T getValue(String expression, Object root, Map<String, Object>... variables) {
-        return getValue(expression, root, Boolean.FALSE, variables);
+        try {
+            return getValue(expression, root, Boolean.FALSE, variables);
+        } catch (SpelEvaluationException e) {
+            throw new RuntimeException(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("表达式[" + expression + "]执行出错");
+        }
     }
 
     @Override
     public <T> T getValueByTemplate(String expression, Object root, Map<String, Object>... variables) {
-        return getValue(expression, root, Boolean.TRUE, variables);
+        try {
+            return getValue(expression, root, Boolean.TRUE, variables);
+        } catch (SpelEvaluationException e) {
+            throw new RuntimeException(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("表达式[" + expression + "]执行出错");
+        }
     }
 
     @Override

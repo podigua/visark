@@ -15,10 +15,10 @@
         </div>
         <div>
           <div v-if="format==='string'">
-            <el-input v-model="row.message" :autosize="{minRows:4}" type="textarea"></el-input>
+            <el-input v-model="row.message" :autosize="{minRows:4}" type="textarea":spellcheck="false"></el-input>
           </div>
           <div v-if="format==='json'" style="overflow: auto;">
-            <el-input v-model="row.json" :autosize="{minRows:4}" type="textarea"></el-input>
+            <el-input v-model="row.json" :autosize="{minRows:4}" type="textarea":spellcheck="false"></el-input>
           </div>
         </div>
 
@@ -52,6 +52,7 @@
       <ux-grid
           v-loading="loading"
           ref="table"
+          :widthResize="true"
           row-id="offset"
           :data="list"
           size="mini"

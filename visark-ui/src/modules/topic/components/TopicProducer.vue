@@ -121,7 +121,7 @@
             </el-row>
             <div style="text-align: right">
               <el-button type="primary" @click="saveProgramme" :loading="loading">保存方案</el-button>
-              <el-button type="primary">发送</el-button>
+              <el-button type="primary" @click="sendMessage" :loading="loading">发送</el-button>
             </div>
           </el-form>
         </div>
@@ -134,6 +134,7 @@
 <script>
 import expressionApi from "../api/expression";
 import programmeApi from '../api/programme'
+import adminApi from '@/modules/admin/api/admin'
 
 export default {
   name: "TopicProducer",
@@ -296,6 +297,26 @@ export default {
         this.tab = this.tabs[this.tabs.length - 1].id;
       }
     },
+    sendMessage() {
+      let node = this.tabs.find(data => data.id === this.tab);
+      if (!node.contentValue) {
+        this.$message.error("消息不能为空");
+        return;
+      }
+      let message = {
+        expressions: node.expressions,
+        key: node.contentKey,
+        value: node.contentValue
+      }
+      adminApi.send(this.cluster, this.topic, message).then(() => {
+        this.$message.success("发送成功");
+        this.loading = false;
+      }).catch((err) => {
+        // console.log(err,err.response)
+        this.$message.error(err.response.data.message);
+        this.loading = false;
+      })
+    }
   }, created() {
     this.getExpression();
     this.getProgrammeList();

@@ -30,5 +30,8 @@ export default {
     },
     getData(params) {
         return get("/data/size", params);
+    },
+    send(cluster,topic,message){
+        return postJson(`/admin/${cluster}/${topic}/send`, message);
     }
 }
