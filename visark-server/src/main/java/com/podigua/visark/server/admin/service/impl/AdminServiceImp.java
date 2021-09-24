@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -101,14 +102,12 @@ public class AdminServiceImp implements AdminService {
     @Override
     public void deleteConsumer(String id, String groupId) {
         KafkaAdminClient client = adminCacheService.getById(id);
-        List<String> groups = new ArrayList<>();
-        groups.add(groupId);
-        DeleteConsumerGroupsResult result = client.deleteConsumerGroups(groups);
+        DeleteConsumerGroupsResult result = client.deleteConsumerGroups(Collections.singletonList(groupId));
         result.deletedGroups().forEach((key,value)->{
             try {
                 value.get();
-            } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException("删除失败");
+            } catch (Exception e) {
+                throw new RuntimeException(e.getMessage());
             }
         });
     }

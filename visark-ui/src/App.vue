@@ -144,16 +144,19 @@
           <div v-if="isReady" style="padding-right: 10px;">
             <el-input
                 placeholder="输入关键字进行过滤"
+                clearable
                 v-model="filterText">
             </el-input>
             <el-tree ref="tree"
                      :data="trees"
+                     @node-click="onNodeClick"
                      expand-on-click-node
                      :filter-node-method="filterNode"
                      node-key="value">
                <span class="tree-node" slot-scope="{ data, node }">
-                  <span style="width: 200px;overflow: hidden;white-space: nowrap;text-overflow:ellipsis;" :title="data.label">{{ data.label }}</span>
-                 <span>
+                  <span style="width: 200px;overflow: hidden;white-space: nowrap;text-overflow:ellipsis;"
+                        :title="data.label">{{ data.label }}</span>
+                 <span v-if="data.type!=='CONSUMER'">
                    <el-dropdown @command="(command)=>{handleCommand(command,data,node)}">
                     <el-button type="text" icon="el-icon-more-outline">
                     </el-button>
@@ -173,6 +176,9 @@
                       </template>
                       <template v-if="data.type==='NODE'">
                         <el-dropdown-item icon="el-icon-view" command="view-nodes"> 节点信息</el-dropdown-item>
+                      </template>
+                       <template v-if="data.type==='CONSUMER_INSTANCE'">
+                        <el-dropdown-item icon="el-icon-delete" command="delete-consumer"> 删除</el-dropdown-item>
                       </template>
                     </el-dropdown-menu>
                   </el-dropdown>
@@ -305,6 +311,11 @@ export default {
         }
       })
     },
+    onNodeClick(data) {
+      if (data.type === 'TOPIC_INSTANCE') {
+        this.topicData(data);
+      }
+    },
     handleCommand(command, data, node) {
       this.current.data = data;
       this.current.node = node;
@@ -324,6 +335,8 @@ export default {
         this.topicData(data);
       } else if (command === 'new-partition') {
         this.newPartitions(data);
+      } else if (command === 'delete-consumer') {
+        this.deleteConsumer(data, node);
       }
     },
     refreshTopic(data) {
@@ -375,6 +388,19 @@ export default {
     newPartitions(data) {
       this.topic = data.value;
       this.isNewPartitions = true;
+    },
+    deleteConsumer(data, node) {
+      this.$confirm("此操作将永久删除, 是否继续?", "提示").then(() => {
+        adminApi.deleteConsumer(this.cluster, data.value).then(() => {
+          this.$message.success("删除成功");
+          const parent = node.parent;
+          const children = parent.data.children || parent.data;
+          const index = children.findIndex(d => d.value === data.value);
+          children.splice(index, 1);
+        }).catch((err) => {
+          this.$message.error("删除失败:" + err.response.data.message);
+        })
+      });
     },
     onNewPartitionsSuccess() {
       this.isNewPartitions = false;

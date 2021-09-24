@@ -79,9 +79,20 @@ public class AdminRestController {
      * @param id    集群
      * @param topic topic
      */
-    @DeleteMapping("/{id}/{topic}")
+    @DeleteMapping("/topic/{id}/{topic}")
     public void deleteTopic(@PathVariable String id, @PathVariable String topic) {
         adminService.deleteTopic(id, topic);
+    }
+
+    /**
+     * 删除consumer
+     *
+     * @param id    集群
+     * @param consumer consumer
+     */
+    @DeleteMapping("/consumer/{id}/{consumer}")
+    public void deleteConsumer(@PathVariable String id, @PathVariable String consumer) {
+        adminService.deleteConsumer(id, consumer);
     }
 
     /**

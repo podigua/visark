@@ -11,7 +11,10 @@ export default {
         return postJson(`/admin/${id}/topic/create`, topic);
     },
     deleteTopic(id, topic) {
-        return del(`/admin/${id}/${topic}`)
+        return del(`/admin/topic/${id}/${topic}`)
+    },
+    deleteConsumer(id, consumer) {
+        return del(`/admin/consumer/${id}/${consumer}`)
     },
     getNode(cluster, id) {
         return get(`/admin/${cluster}/node/${id}`);
