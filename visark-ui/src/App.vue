@@ -149,12 +149,11 @@
             </el-input>
             <el-tree ref="tree"
                      :data="trees"
-                     @node-click="onNodeClick"
                      expand-on-click-node
                      :filter-node-method="filterNode"
                      node-key="value">
                <span class="tree-node" slot-scope="{ data, node }">
-                  <span style="width: 200px;overflow: hidden;white-space: nowrap;text-overflow:ellipsis;"
+                  <span style="width: 200px;overflow: hidden;white-space: nowrap;text-overflow:ellipsis;" @dblclick="onNodeClick(data)" onselectstart="return false"
                         :title="data.label">{{ data.label }}</span>
                  <span v-if="data.type!=='CONSUMER'">
                    <el-dropdown @command="(command,event)=>{handleCommand(command,data,node,event)}">
@@ -220,7 +219,6 @@ export default {
   components: {NewPartitions, TopicData, Topic, Option, Cluster, NewTopic, Node, NodeList},
   data() {
     return {
-      clickCount: 0,
       tabs: [],
       current: {
         data: null,
@@ -313,18 +311,9 @@ export default {
       })
     },
     onNodeClick(data) {
-      this.clickCount++;
-      if (this.clickCount < 2) {
-        return;
+      if (data.type === 'TOPIC_INSTANCE') {
+        this.topicData(data);
       }
-      setTimeout(() => {
-        if (this.clickCount >= 2) {
-          this.clickCount = 0
-          if (data.type === 'TOPIC_INSTANCE') {
-            this.topicData(data);
-          }
-        }
-      }, 100);
     },
     handleCommand(command, data, node, event) {
       this.current.data = data;

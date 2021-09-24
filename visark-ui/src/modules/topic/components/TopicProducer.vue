@@ -1,6 +1,82 @@
 <template>
   <div>
     <el-dialog
+        title="表达式"
+        :modal="false"
+        width="50%"
+        :close-on-click-modal="false"
+        :visible.sync="isEditProression"
+    >
+      <el-form :model="expression" ref="expressionRef" label-width="0px">
+        <div>
+          <el-button icon="el-icon-plus" @click="addExpression" title="新增"></el-button>
+        </div>
+        <el-table :data="expression.expressions" stripe>
+          <el-table-column label="键" width="180px">
+            <template slot-scope="scope">
+              <el-form-item label-width="0px"
+                            :prop="'expressions['+scope.$index+'].code'"
+                            :rules="{ required: true, message: '键不能为空', trigger: ['blur','change']}">
+                <el-input v-model="scope.row.code"></el-input>
+              </el-form-item>
+            </template>
+          </el-table-column>
+          <el-table-column label="表达式">
+            <template slot-scope="scope">
+              <el-form-item label-width="0px"
+                            :prop="'expressions['+scope.$index+'].expression'"
+                            :rules="{ required: true, message: '表达式不能为空', trigger: ['blur','change']}">
+                <el-input v-model="scope.row.expression">
+                  <el-dropdown slot="append" trigger="click"
+                               @command="(command)=>{handleCommand(command,scope.$index)}">
+                              <span class="el-dropdown-link">
+                                 <el-button type="text" icon="el-icon-more-outline"></el-button>
+                              </span>
+                    <el-dropdown-menu slot="dropdown">
+                      <el-dropdown-item v-for="(exp,index) in expressions" :command="exp.value" :key="index">
+                        {{ exp.label }}
+                      </el-dropdown-item>
+                    </el-dropdown-menu>
+                  </el-dropdown>
+                </el-input>
+              </el-form-item>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="80px">
+            <template slot-scope="scope">
+              <el-form-item label-width="0px">
+                <el-button icon="el-icon-delete" plain @click="deleteExpression(scope.$index)"
+                           title="删除"></el-button>
+              </el-form-item>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button-group>
+          <el-button @click="isEditProression=false">取 消</el-button>
+          <el-button type="primary" @click="saveExpression" :loading="loading">确 定</el-button>
+        </el-button-group>
+      </span>
+    </el-dialog>
+    <el-dialog
+        title="方案列表"
+        :modal="false"
+        width="50%"
+        :close-on-click-modal="false"
+        :visible.sync="isProgramme"
+    >
+      <el-table :data="programmes" stripe @row-dblclick="onProgrammesDblclick">
+        <el-table-column label="方案名称" prop="name"></el-table-column>
+        <el-table-column label="操作" prop="action" width="80px">
+          <template slot-scope="scope">
+            <el-button icon="el-icon-delete" plain @click="deleteProgramme(scope.row.id,scope.row.index)"
+                       title="删除"></el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
+    <el-dialog
         title="方案"
         :modal="false"
         width="500px"
@@ -23,76 +99,6 @@
         </el-button-group>
       </span>
     </el-dialog>
-    <el-drawer
-        title="方案列表"
-        :visible.sync="isProgramme">
-      <el-table :data="programmes" stripe @row-dblclick="onProgrammesDblclick">
-        <el-table-column label="方案名称" prop="name"></el-table-column>
-        <el-table-column label="操作" prop="action" width="80px">
-          <template slot-scope="scope">
-            <el-button icon="el-icon-delete" plain @click="deleteProgramme(scope.row.id,scope.row.index)"
-                       title="删除"></el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </el-drawer>
-    <el-drawer
-        title="表达式"
-        :visible.sync="isDrawer"
-        ref="expressionDrawerRef"
-        :before-close="handleExpressionClose">
-      <div style="width: 500px">
-        <el-form :model="expression" ref="expressionRef" label-width="0px">
-          <div>
-            <el-button icon="el-icon-plus" @click="addExpression" title="新增"></el-button>
-          </div>
-          <el-table :data="expression.expressions" stripe>
-            <el-table-column label="键" width="180px">
-              <template slot-scope="scope">
-                <el-form-item label-width="0px"
-                              :prop="'expressions['+scope.$index+'].code'"
-                              :rules="{ required: true, message: '键不能为空', trigger: ['blur','change']}">
-                  <el-input v-model="scope.row.code"></el-input>
-                </el-form-item>
-              </template>
-            </el-table-column>
-            <el-table-column label="表达式">
-              <template slot-scope="scope">
-                <el-form-item label-width="0px"
-                              :prop="'expressions['+scope.$index+'].expression'"
-                              :rules="{ required: true, message: '表达式不能为空', trigger: ['blur','change']}">
-                  <el-input v-model="scope.row.expression">
-                    <el-dropdown slot="append" trigger="click"
-                                 @command="(command)=>{handleCommand(command,scope.$index)}">
-                              <span class="el-dropdown-link">
-                                 <el-button type="text" icon="el-icon-more-outline"></el-button>
-                              </span>
-                      <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item v-for="(exp,index) in expressions" :command="exp.value" :key="index">
-                          {{ exp.label }}
-                        </el-dropdown-item>
-                      </el-dropdown-menu>
-                    </el-dropdown>
-                  </el-input>
-                </el-form-item>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" width="80px">
-              <template slot-scope="scope">
-                <el-form-item label-width="0px">
-                  <el-button icon="el-icon-delete" plain @click="deleteExpression(scope.$index)"
-                             title="删除"></el-button>
-                </el-form-item>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-form>
-      </div>
-      <div style="text-align: right;margin: 5px;">
-        <el-button @click="isDrawer=false">取 消</el-button>
-        <el-button type="primary" @click="saveExpression">确 定</el-button>
-      </div>
-    </el-drawer>
 
     <div style="padding: 5px 5px">
       <i class="iconfont icon-gaojibiaodashi" style="color:#008CD2;font-size:16pt;cursor: pointer;margin-right: 10px"
@@ -142,7 +148,7 @@ export default {
   data() {
     return {
       loading: false,
-      isDrawer: false,
+      isEditProression: false,
       isProgramme: false,
       isEdit: false,
       expressions: [],
@@ -191,20 +197,17 @@ export default {
       let node = this.tabs.find(data => data.id === this.tab);
       this.expression.expressions = [];
       this.expression.expressions.push(...node.expressions);
-      this.isDrawer = true;
+      this.isEditProression = true;
     },
-    handleExpressionClose(done) {
+    saveExpression() {
       this.$refs.expressionRef.validate(v => {
         if (v) {
           let node = this.tabs.find(data => data.id === this.tab);
           node.expressions = [];
           node.expressions.push(...this.expression.expressions);
-          done()
+          this.isEditProression=false;
         }
       })
-    },
-    saveExpression() {
-      this.$refs.expressionDrawerRef.closeDrawer();
     },
     getProgrammeList() {
       programmeApi.query4List(this.cluster, this.topic).then(res => {

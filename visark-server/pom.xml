@@ -76,7 +76,6 @@
     <build>
         <finalName>visark</finalName>
         <plugins>
-
             <!-- Spring Boot 构建 -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -144,7 +143,6 @@
             </plugin>
         </plugins>
         <resources>
-            <!-- Vue打包后目录 -->
             <resource>
                 <directory>../visark-ui/dist</directory>
                 <targetPath>static</targetPath>
