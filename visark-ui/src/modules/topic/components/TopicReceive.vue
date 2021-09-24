@@ -154,7 +154,6 @@ export default {
       return (() => {
         let screenHeight = window.innerHeight;
         this.height=screenHeight-230;
-        console.log(this.height)
       })();
     };
   },
@@ -256,7 +255,6 @@ export default {
           let message = JSON.parse(this.row.message);
           this.row.json = JSON.stringify(message, null, 4);
         } catch (e) {
-          console.log(e);
           this.$message.error("格式化失败");
           this.format = 'string';
         }

@@ -168,7 +168,6 @@ export default {
     }
   }, methods: {
     addExpression() {
-      console.log(this.expression)
       this.expression.expressions.push({
         code: "",
         expression: ""
@@ -220,8 +219,6 @@ export default {
     save() {
       this.$refs.programmeRef.validate(v => {
         if (v) {
-          console.log("tabs:", this.tabs)
-          console.log("tab:", this.tab)
           let node = this.tabs.find(data => data.id === this.tab);
           let remove = false;
           let index = this.tabs.findIndex(data => data.id === this.tab);
@@ -276,7 +273,6 @@ export default {
     onTabAdd() {
       let uid = "temp" + this.$uuid.v4();
       let id = uid.replace(/-/g, '');
-      console.log(id)
       this.tabs.push({
         id: id,
         name: "new",
@@ -312,7 +308,6 @@ export default {
         this.$message.success("发送成功");
         this.loading = false;
       }).catch((err) => {
-        // console.log(err,err.response)
         this.$message.error(err.response.data.message);
         this.loading = false;
       })

@@ -157,7 +157,7 @@
                   <span style="width: 200px;overflow: hidden;white-space: nowrap;text-overflow:ellipsis;"
                         :title="data.label">{{ data.label }}</span>
                  <span v-if="data.type!=='CONSUMER'">
-                   <el-dropdown @command="(command)=>{handleCommand(command,data,node)}">
+                   <el-dropdown @command="(command,event)=>{handleCommand(command,data,node,event)}">
                     <el-button type="text" icon="el-icon-more-outline">
                     </el-button>
                     <el-dropdown-menu slot="dropdown">
@@ -220,6 +220,7 @@ export default {
   components: {NewPartitions, TopicData, Topic, Option, Cluster, NewTopic, Node, NodeList},
   data() {
     return {
+      clickCount: 0,
       tabs: [],
       current: {
         data: null,
@@ -312,11 +313,20 @@ export default {
       })
     },
     onNodeClick(data) {
-      if (data.type === 'TOPIC_INSTANCE') {
-        this.topicData(data);
+      this.clickCount++;
+      if (this.clickCount < 2) {
+        return;
       }
+      setTimeout(() => {
+        if (this.clickCount >= 2) {
+          this.clickCount = 0
+          if (data.type === 'TOPIC_INSTANCE') {
+            this.topicData(data);
+          }
+        }
+      }, 100);
     },
-    handleCommand(command, data, node) {
+    handleCommand(command, data, node, event) {
       this.current.data = data;
       this.current.node = node;
       if (command === 'create-topic') {
@@ -426,6 +436,11 @@ export default {
       if (index > -1) {
         this.$refs[name][0].close();
         this.tabs.splice(index, 1);
+        if (this.tabs.length > 0) {
+          this.currentTab = this.tabs[this.tabs.length - 1];
+        } else {
+          this.currentTab = "";
+        }
       }
     }
   }, created() {

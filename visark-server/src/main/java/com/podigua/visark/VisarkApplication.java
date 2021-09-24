@@ -38,6 +38,7 @@ public class VisarkApplication extends AbstractJavafxApplication {
         view.prefWidthProperty().bind(root.widthProperty());
         stage.setTitle("Visark");
         stage.getIcons().add(new Image(new ClassPathResource("images/logo.png").getInputStream()));
+        stage.setMaximized(true);
         stage.show();
     }
 
