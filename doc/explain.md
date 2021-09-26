@@ -86,7 +86,7 @@
 |---|---|---|
 |current|#date.current()|获取当前时间|
 |after|#date.addDays(#current,1)|将当前时间+1天|
-|afterString|#string.format(#after,‘yyyy-MM-dd HH’)|将`after`格式化为`yyyy-MM-dd hh`|
+|afterString|#string.format(#after,‘yyyy-MM-dd HH’)|将`after`格式化为`yyyy-MM-dd HH`|
 value 如下
 ```json
 {"time":"${#afterString}","creator": "Lucy","type": "类型"}
