@@ -50,8 +50,6 @@ public class KafkaSizeReceive<K, V> extends AbstractKafkaReceive {
             }
             Map<TopicPartition, Long> endOffsets = consumer.endOffsets(partitions);
             Map<TopicPartition, Long> startOffsets = consumer.beginningOffsets(partitions);
-            System.out.println(startOffsets);
-            System.out.println(endOffsets);
             for (TopicPartition partition : partitions) {
                 Long startOffset = getOffset(partition.partition(), startOffsets);
                 Long endOffset = getOffset(partition.partition(), endOffsets);
