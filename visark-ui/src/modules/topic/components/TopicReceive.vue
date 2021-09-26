@@ -281,4 +281,11 @@ export default {
   height: 38px;
   line-height: 38px;
 }
+/deep/ .elx-cell--label{
+  -moz-user-select:text;/*火狐*/
+  -webkit-user-select:text;;/*webkit浏览器*/
+  -ms-user-select:text;;/*IE10*/
+  -khtml-user-select:text;;/*早期浏览器*/
+  user-select:text;
+}
 </style>
